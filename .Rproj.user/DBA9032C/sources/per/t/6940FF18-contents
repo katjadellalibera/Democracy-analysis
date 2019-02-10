@@ -1,15 +1,15 @@
+# import file using readxl library
 library(readxl)
 data <- read_excel("Democracy Cross-National Data V4.1 09092015.xlsx")
-for (i in 1:195) {data$Nation[i]<- data.frame(c(1971:2014))}
-for (i in 1:195){data$Nation[i]<- c(data$Nation[i])}
-gdp_fh_by_year<-data.frame(year=c(1971:2014),
-                           )
-data$Fhstand2000
 
+#import ggplot2 and ggprepel(for labels)
 library(ggplot2)
 library(ggrepel)
 
-gfit1<- lm(FHstand2014~GDP2014,data=data)
+# fit a linear regression on the data
+fit1<- lm(FHstand2014~GDP2014,data=data)
+# plot the correlation between GDP per capita and freedom house rating in 2014
+# include country labels
 ggplot(data, aes(x=GDP2014,y=FHstand2014))+
     geom_point()+
     scale_x_log10()+
@@ -17,7 +17,7 @@ ggplot(data, aes(x=GDP2014,y=FHstand2014))+
     xlab("GDP per capita")+
     ylab("freedom house rating")+
     stat_smooth(method="lm",color="red")+
-    geom_label_repel(aes(label=Natlabel),
+    geom_label_repel(aes(label=Nation),
                     box.padding = 0.1,
                     point.padding = 0.2,
                     segment.color = "grey50")+
@@ -25,6 +25,7 @@ ggplot(data, aes(x=GDP2014,y=FHstand2014))+
                      "Intercept =",signif(fit1$coef[[1]],5 ),
                      " Slope =",signif(fit1$coef[[2]], 5),
                      " P =",signif(summary(fit1)$coef[2,4], 5)))
+# plot the correlation without labels
 ggplot(data, aes(x=GDP2014,y=FHstand2014))+
   geom_point()+
   scale_x_log10()+
@@ -37,27 +38,14 @@ ggplot(data, aes(x=GDP2014,y=FHstand2014))+
                      " Slope =",signif(fit1$coef[[2]], 5),
                      " P =",signif(summary(fit1)$coef[2,4], 5)))
 
-fit2<- lm(FHstand1975~GDP1975)
-ggplot(data, aes(x=GDP1975,y=FHstand1975))+
-  geom_point()+
-  scale_x_log10()+
-  ggtitle("GDP per capita vs freedom house rating in 1975")+
-  xlab("GDP per capita")+
-  ylab("freedom house rating")+
-  stat_smooth(method="lm",color="red")
-
-ggplot(data, aes(x=GDP2000,y=Fhstand2000))+
-  geom_point()+
-  scale_x_log10()+
-  ggtitle("GDP per capita vs freedom house rating in 2000")+
-  xlab("GDP per capita")+
-  ylab("freedom house rating")+
-  geom_smooth(method="lm")
-
+# combining data from 1975, 1984, 2000, and 2014 in one plot
 ggplot()+
   geom_point(data=data, 
              aes(x=GDP1975,y=FHstand1975,
                  color="1975"))+
+  geom_point(data=data,
+             aes(x=GDPPC1984,y=FHStand1984,
+                 color="1984"))+
   geom_point(data=data, 
              aes(x=GDP2000,y=Fhstand2000,
                  color="2000"))+
